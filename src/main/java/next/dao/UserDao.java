@@ -1,15 +1,18 @@
 package next.dao;
 
 import core.jdbc.JdbcTemplate;
+import core.jdbc.ResultMapper;
 import next.model.User;
 
 import java.util.List;
 
 public class UserDao {
     private JdbcTemplate template;
+    private ResultMapper<User> resultMapper;
 
     public UserDao() {
         template = new JdbcTemplate();
+        resultMapper = new ResultMapper<>(User.class);
     }
 
     public void insert(User user) {
@@ -22,15 +25,15 @@ public class UserDao {
         template.executeQuery(sql, user.getPassword(), user.getName(), user.getEmail(), user.getUserId());
     }
 
-    public List<User> findAll() {
+    public List findAll() {
         String sql = "SELECT userId, password, name, email FROM USERS";
 
-        return template.executeQueryForList(sql, new UserDaoResultMapper());
+        return template.executeQueryForList(sql, resultMapper);
     }
 
     public User findByUserId(String userId) {
         String sql = "SELECT userId, password, name, email FROM USERS WHERE userId = ?";
 
-        return template.executeQuery(sql, new UserDaoResultMapper(), userId);
+        return template.executeQuery(sql, resultMapper, userId);
     }
 }
